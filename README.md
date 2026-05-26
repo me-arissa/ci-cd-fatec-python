@@ -6,4 +6,3 @@ Este repositório contém uma pipeline que executa:
 3. Etapa de deploy (simulada)
 
 ## Evidências
-clear
