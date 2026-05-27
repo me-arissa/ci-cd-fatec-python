@@ -1,4 +1,7 @@
 # main.py
+import sqlite3
+
+
 def saudacao(nome: str) -> str:
     """Retorna uma saudação segura."""
     if not isinstance(nome, str):
@@ -13,20 +16,19 @@ def calcular_media(notas: list) -> float:
     return sum(notas) / len(notas)
 
 
-import sqlite3
-
-def buscar_usuario_vulneravel(user_id):
+def buscar_usuario_seguro(user_id):
+    """Busca um usuário de forma segura usando queries parametrizadas."""
     conn = sqlite3.connect('banco.db')
     cursor = conn.cursor()
-    # ⚠️ SQL INJECTION: nunca faça isso em produção!
-    cursor.execute(f"SELECT * FROM users WHERE id={user_id}")
-    return cursor.fetchone()
+    # Usando a variável cursor de forma correta e segura para o flake8 não reclamar
+    cursor.execute("SELECT * FROM usuarios WHERE id = ?", (user_id,))
+    resultado = cursor.fetchone()
+    conn.close()
+    return resultado
 
 
-# 2. O bloco de teste fica logo abaixo dele, encerrando o arquivo
 if __name__ == "__main__":
     print(saudacao("Aluno FATEC"))
     print(f'Média: {calcular_media([8.5, 9.0, 7.5])}')
-
-    id_teste = "1 OR 1=1"
-    buscar_usuario_vulneravel(id_teste)
+    # Exemplo de uso da função para garantir que o código rode perfeitamente
+    print(f'Usuário: {buscar_usuario_seguro(1)}')
