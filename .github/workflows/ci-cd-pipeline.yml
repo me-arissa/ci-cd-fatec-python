@@ -2,99 +2,101 @@ name: CI/CD Pipeline com CodeQL
 
 on:
   push:
-    branches: [ main]
-
-  pull request:
-    branches: [ main]
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
-
-#===========================================
-# JOB 1: Análise de Segurança com Code QL
-#===========================================
+  # ═══════════════════════════════════════════
+  # JOB 1: Análise de Segurança com CodeQL
+  # ═══════════════════════════════════════════
   codeql-analysis:
-    name: 'Análise CodeQL'
-
-
+    name: '🔒 Análise CodeQL'
     runs-on: ubuntu-latest
     permissions:
-    actions: read
-    contents: read
-    security-events: write
-  
-  steps:
-    name:. Checkout do código
-    uses: actions/checkout@v4
+      actions: read
+      contents: read
+      security-events: write
 
-    name: Configurar Python
-    uses: actions/setup-python@v5
-    with:
-      python-version: '3.11'
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
 
-    name: Instalar dependências
-    run: |
-      pip install -r requirements.txt
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
-    name: Inicializar CodeQL
-    uses: github/codeql-action/init@v3
-    with:
-      languages: python
-      config-file: /.github/codeql-config.yml
-    
-    name: Executar análise CodeQL
-    uses: github/codeql-action/analyze@v3
+      - name: Instalar dependências
+        run: |
+          pip install -r requirements.txt
 
-#================================
-#JOB 2: Testes Automatizados
-#================================
+      - name: Inicializar CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: python
+          config-file: ./.github/codeql-config.yml
 
-tests:
-  name: 'Testes Automatizados'
-  runs-on: ubuntu-latest
-  needs: codeql-analysis
+      - name: Executar análise CodeQL
+        uses: github/codeql-action/analyze@v3
 
-steps:
-  name: Checkout do código
-  uses: actions/checkout@v4
 
-  name: configurar python
-  uses: actions/setup-python@v5
-  with:
-    python-version: '3.11'
+  #================================
+  # JOB 2: Testes Automatizados
+  #================================
+  tests:
+    name: '🧪 Testes Automatizados'
+    runs-on: ubuntu-latest
+    needs: codeql-analysis
 
-  name: Instalar dependências
-  run: |
-    pip install -r requeriments.txt
-    pip install  pytest flake8
+    steps: # <- Corrigido: Avançado 4 espaços para dentro do job
+      - name: Checkout do código # <- Corrigido: Adicionado o '-' antes do name
+        uses: actions/checkout@v4
 
-  name: executar testes
-  run: flake8 . --max-line-length=120 --exclude=venv
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
-# ═══════════════════════════════════════════
-# JOB 3: Deploy para Stage
-# ═══════════════════════════════════════════
-deploy-stage:
-  name: '🚀 Deploy para Stage'
-  runs-on: ubuntu-latest
-  needs: [codeql-analysis, tests]
-  environment: stage
+      - name: Instalar dependências
+        run: |
+          pip install -r requirements.txt
+          pip install pytest flake8
 
-  steps:
-  - name: Checkout do código
-    uses: actions/checkout@v4
+      - name: Executar testes
+        run: pytest tests/ -v
+        env:
+          PYTHONPATH: . 
 
-  - name: Configurar Python
-    uses: actions/setup-python@v5
-    with:
-      python-version: '3.11'
+      - name: Verificar qualidade do código
+        run: flake8 . --max-line-length=120 --exclude=venv
 
-  - name: Instalar dependências
-    run: pip install -r requirements.txt
 
-  - name: Simular deploy para Stage
-    run: |
-      echo '✅ Deploy para Stage iniciado'
-      echo 'Versão: ${{ github.sha }}'
-      echo 'Branch: ${{ github.ref_name }}'
-      echo '🚀 Aplicação disponível em stage!'
+  # ═══════════════════════════════════════════
+  # JOB 3: Deploy para Stage
+  # ═══════════════════════════════════════════
+  deploy-stage:
+    name: '🚀 Deploy para Stage'
+    runs-on: ubuntu-latest
+    needs: [codeql-analysis, tests]
+    environment: stage
+
+    steps: # <- Corrigido: Avançado 4 espaços para dentro do job
+      - name: Checkout do código # <- Corrigido: Adicionado o '-' antes do name
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Simular deploy para Stage
+        run: |
+          echo '✅ Deploy para Stage iniciado'
+          echo 'Versão: ${{ github.sha }}'
+          echo 'Branch: ${{ github.ref_name }}'
+          echo '🚀 Aplicação disponível em stage!'
