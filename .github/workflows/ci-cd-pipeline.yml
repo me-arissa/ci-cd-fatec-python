@@ -20,8 +20,6 @@ jobs:
       security-events: write
 
     steps:
-      - name: 💥 TESTE FORÇADO DE QUEBRA
-        run: comando_que_nao_existe_para_forcar_erro
 
       - name: Checkout do código
         uses: actions/checkout@v4

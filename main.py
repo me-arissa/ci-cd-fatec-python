@@ -13,6 +13,20 @@ def calcular_media(notas: list) -> float:
     return sum(notas) / len(notas)
 
 
+import sqlite3
+
+def buscar_usuario_vulneravel(user_id):
+    conn = sqlite3.connect('banco.db')
+    cursor = conn.cursor()
+    # ⚠️ SQL INJECTION: nunca faça isso em produção!
+    cursor.execute(f"SELECT * FROM users WHERE id={user_id}")
+    return cursor.fetchone()
+
+
+# 2. O bloco de teste fica logo abaixo dele, encerrando o arquivo
 if __name__ == "__main__":
     print(saudacao("Aluno FATEC"))
     print(f'Média: {calcular_media([8.5, 9.0, 7.5])}')
+
+    id_teste = "1 OR 1=1"
+    buscar_usuario_vulneravel(id_teste)
