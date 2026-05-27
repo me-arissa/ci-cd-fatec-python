@@ -20,6 +20,9 @@ jobs:
       security-events: write
 
     steps:
+      - name: 💥 TESTE FORÇADO DE QUEBRA
+        run: comando_que_nao_existe_para_forcar_erro
+
       - name: Checkout do código
         uses: actions/checkout@v4
 
@@ -36,10 +39,22 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: python
-          config-file: ./.github/codeql-config.yml
+          config-file: .github/codeql-config.yml
 
       - name: Executar análise CodeQL
         uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:python"
+          
+      - name: 🛡️ Validar Gate de Segurança (Código Malicioso)
+        run: |
+          if grep -q "buscar_usuario_vulneravel" main.py; then
+            echo "========================================================="
+            echo "❌ ERRO: Vulnerabilidade de SQL Injection detectada!"
+            echo "A pipeline foi interrompida para impedir o deploy malicioso."
+            echo "========================================================="
+            exit 1
+          fi
 
 
   #================================
