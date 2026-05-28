@@ -32,3 +32,4 @@ if __name__ == "__main__":
     print(f'Média: {calcular_media([8.5, 9.0, 7.5])}')
     # Exemplo de uso da função para garantir que o código rode perfeitamente
     print(f'Usuário: {buscar_usuario_seguro(1)}')
+    
